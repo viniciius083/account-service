@@ -3,12 +3,15 @@ package br.com.account.model;
 import br.com.account.dto.AccountDTO;
 import br.com.account.model.enumeration.AccountStatus;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.UUID;
 
 @Entity(name = "tb_account")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Account {
 
     @Id

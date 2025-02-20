@@ -1,26 +1,35 @@
 package br.com.account.service;
 
+//import br.com.account.client.UserServiceClient;
+
+import br.com.account.client.UserServiceClient;
 import br.com.account.dto.AccountDTO;
-import br.com.account.dto.AccountUpsertEvent;
-import br.com.account.events.EventPublisher;
+import br.com.account.dto.PasswordDTO;
+import br.com.account.dto.UserPassword;
+import br.com.account.messaging.QueuesProducer;
 import br.com.account.model.Account;
 import br.com.account.model.enumeration.AccountStatus;
 import br.com.account.repository.AccountRepository;
 import br.com.exceptions.exceptions.ConflictException;
 import br.com.exceptions.exceptions.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AccountService {
 
     @Autowired
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
     @Autowired
-    private EventPublisher eventPublisher;
+    private final QueuesProducer queuesProducer;
+
+    @Autowired
+    private final UserServiceClient userServiceClient;
 
     public AccountDTO createAccount(AccountDTO accountDTO) {
         if (accountRepository.findByCnpj(accountDTO.getCnpj()).isPresent()) {
@@ -39,10 +48,30 @@ public class AccountService {
                 .orElseThrow(() -> new NotFoundException("Conta não encontrada: " + accountId));
         account.setStatus(status);
 
-        if(status == AccountStatus.APPROVED) {
-            eventPublisher.publishAccountUpsertEvent(new AccountUpsertEvent(account));
+        AccountDTO accountDTO = new AccountDTO(accountRepository.save(account));
+        queuesProducer.sendAccountUpsertEvent(accountDTO);
+
+        return accountDTO;
+    }
+
+    public AccountDTO createPassword(PasswordDTO passwordDTO) {
+        Account account = accountRepository.findById(passwordDTO.getAccountIdentifier()).orElseThrow(
+                () -> new NotFoundException("Conta não encontrada: " + passwordDTO.getAccountIdentifier()));
+
+        accountValidations(passwordDTO, account);
+        account.setStatus(AccountStatus.ACTIVE);
+        userServiceClient.updatePassword(account.getIdentifier(), new UserPassword(passwordDTO.getPassword()));
+
+        return  new AccountDTO(accountRepository.save(account));
+    }
+
+    private static void accountValidations(PasswordDTO passwordDTO, Account account) {
+        if(account.getStatus() != AccountStatus.APPROVED) {
+            throw new ConflictException("Conta ainda não foi aprovada ou já está ativa.");
         }
 
-        return new AccountDTO(accountRepository.save(account));
+        if(!passwordDTO.getPassword().equals(passwordDTO.getConfirmPassword())) {
+            throw new ConflictException("Senhas diferentes.");
+        }
     }
 }

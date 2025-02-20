@@ -1,6 +1,7 @@
 package br.com.account.controller;
 
 import br.com.account.dto.AccountDTO;
+import br.com.account.dto.PasswordDTO;
 import br.com.account.model.enumeration.AccountStatus;
 import br.com.account.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,14 @@ public class AccountController {
         return accountService.createAccount(accountDTO);
     }
 
-    @PutMapping("/{accountIdentifier}/status")
-    public AccountDTO updateAccountStatus(@PathVariable UUID accountIdentifier, @RequestParam AccountStatus status) {
+    @PostMapping("/create-password")
+    public AccountDTO createPassword(@RequestBody PasswordDTO passwordDTO) {
+        return accountService.createPassword(passwordDTO);
+    }
+
+
+    @PutMapping("/{accountIdentifier}/{status}")
+    public AccountDTO updateAccountStatus(@PathVariable UUID accountIdentifier, @PathVariable AccountStatus status) {
         return accountService.updateAccountStatus(accountIdentifier, status);
     }
 }
