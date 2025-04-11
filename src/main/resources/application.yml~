@@ -22,16 +22,14 @@ spring:
   rabbitmq:
     host: rabbitmq
     port: 5672
-    username: ${RABBIT_USER:root}
-    password: ${RABBIT_PASSWORD:root}
+    username: admin
+    password: admin
 
   jackson:
     serialization:
       INDENT_OUTPUT: true # Indenta o JSON para melhor legibilidade
 
 logging:
-  file:
-    name: logs/application.log
   level:
     root: INFO
     org.springframework: DEBUG

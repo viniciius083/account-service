@@ -74,4 +74,10 @@ public class AccountService {
             throw new ConflictException("Senhas diferentes.");
         }
     }
+
+    public void resendQueue(UUID accountIdentifier) {
+        Account account = accountRepository.findById(accountIdentifier).orElseThrow(
+                () -> new NotFoundException("Conta não encontrada: " + accountIdentifier));
+        queuesProducer.sendAccountUpsertEvent(new AccountDTO(account));
+    }
 }

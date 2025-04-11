@@ -31,6 +31,8 @@ public class Account {
     @Column(nullable = false, unique = true)
     private String email;
 
+    private String logoUrl;
+
     @Embedded
     private Address address;
 
@@ -45,6 +47,7 @@ public class Account {
         this.setCompanyName(accountDTO.getCompanyName());
         this.setTradingName(accountDTO.getTradingName());
         this.setEmail(accountDTO.getEmail());
+        this.setLogoUrl(accountDTO.getLogoUrl());
         this.setAddress(new Address(accountDTO.getAddress()));
         this.setPhoneNumber(accountDTO.getPhoneNumber());
     }

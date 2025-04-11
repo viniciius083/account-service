@@ -18,6 +18,7 @@ public class AccountDTO {
     private String cnpj;
     private String companyName;
     private String tradingName;
+    private String logoUrl;
     private String email;
     private AddressDTO address;
     private String phoneNumber;
@@ -30,6 +31,7 @@ public class AccountDTO {
         this.setCnpj(account.getCnpj());
         this.setCompanyName(account.getCompanyName());
         this.setTradingName(account.getTradingName());
+        this.setLogoUrl(account.getLogoUrl());
         this.setEmail(account.getEmail());
         this.setAddress(new AddressDTO(account.getAddress()));
         this.setPhoneNumber(account.getPhoneNumber());

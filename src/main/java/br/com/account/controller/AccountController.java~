@@ -28,10 +28,6 @@ public class AccountController {
         return accountService.createPassword(passwordDTO);
     }
 
-    @PostMapping("/resend-queue/{accountIdentifier}")
-    public void resendQueue(@PathVariable UUID accountIdentifier) {
-        accountService.resendQueue(accountIdentifier);
-    }
 
     @PutMapping("/{accountIdentifier}/{status}")
     public AccountDTO updateAccountStatus(@PathVariable UUID accountIdentifier, @PathVariable AccountStatus status) {
