@@ -20,10 +20,10 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
-    username: guest
-    password: guest
+    username: admin
+    password: admin
 
   jackson:
     serialization:
